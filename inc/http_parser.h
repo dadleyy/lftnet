@@ -12,9 +12,12 @@ namespace lftnet {
 class HttpParser {
   public:
     HttpParser();
-    HttpParser& operator<<(lftnet::TcpSocket&);
+    bool operator<<(lftnet::TcpSocket&);
+    const char* Data() { return m_impl->m_data; };
+
   private:
     class Impl {
+      friend class HttpParser;
       public:
         Impl();
         ~Impl();

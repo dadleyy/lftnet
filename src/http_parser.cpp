@@ -5,11 +5,12 @@ namespace lftnet {
 HttpParser::HttpParser() : m_impl(new lftnet::HttpParser::Impl) {
 }
 
-HttpParser& HttpParser::operator<<(lftnet::TcpSocket& socket) {
+bool HttpParser::operator<<(lftnet::TcpSocket& socket) {
   do {
     m_impl->Read(socket);
   } while(m_impl->Receiving());
-  return *this;
+
+  return m_impl->m_state == lftnet::HttpParser::Impl::RECEIVING_STATE_FINISHED;
 }
 
 HttpParser::Impl::Impl() : m_size(0), m_state(RECEIVING_STATE_HEADERS) {
@@ -23,7 +24,14 @@ HttpParser::Impl::~Impl() {
 
 void HttpParser::Impl::Read(lftnet::TcpSocket& socket) {
   char buffer[2048];
+
   int received = socket.Read(buffer, 2048);
+
+  if(received < 0) {
+    m_state = RECEIVING_STATE_ERRORED;
+    return;
+  }
+
   m_data = (char*) realloc(m_data, sizeof(char) * (received + m_size + 1));
   memcpy(&m_data[m_size], &buffer[0], sizeof(char) * received);
   m_size += received;
@@ -76,6 +84,7 @@ void HttpParser::Impl::FindContentLength() {
     if(key.find("Content-Length") == 0 && key.size() == 14) {
       m_content_size = std::stoi(val);
       m_state = RECEIVING_STATE_BODY;
+      UpdateState();
     }
   }
 }
