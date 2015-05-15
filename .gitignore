@@ -11,7 +11,7 @@ INSTALL
 /install-sh
 /missing
 /stamp-h1
-/src/loftp
+/src/ltnet
 /src/.deps
 *.swp
 *.o
