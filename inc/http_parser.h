@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <memory.h>
+#include <fstream>
 #include "tcp_socket.h"
 
 namespace lftnet {
