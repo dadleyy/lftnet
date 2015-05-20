@@ -25,7 +25,7 @@ HttpResponse::HttpResponse(const char* data) {
   }
 
   m_body.resize(content_length);
-  memcpy(&m_body[0], &data[head_size + 4], content_length * sizeof(char));
+  memcpy(&m_body[0], &data[head_size + 4], content_length * sizeof(unsigned char));
 }
 
 }
